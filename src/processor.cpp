@@ -1,11 +1,10 @@
 #include "processor.h"
-#include <iostream>
-// TODO: Return the aggregate CPU utilization
+
+// --TODO--: Return the aggregate CPU utilization
 float Processor::Utilization() {
   vector<string> cpu_utils_string = LinuxParser::CpuUtilization();
   vector<float> cpu_utils_float(cpu_utils_string.size());
   std::transform(cpu_utils_string.begin(), cpu_utils_string.end(), cpu_utils_float.begin(), [](const std::string &str) {
-      // std::cout << "debug: " << str << std::endl;
       return std::stof(str);
   });
 

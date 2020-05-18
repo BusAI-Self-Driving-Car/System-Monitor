@@ -28,6 +28,7 @@ void System::RefreshProcesses() {
 // --TODO--: Return a container composed of the system's processes
 vector<Process>& System::Processes()  {
     RefreshProcesses();
+    sort(processes_.begin(), processes_.end());
     return processes_;
 }
 

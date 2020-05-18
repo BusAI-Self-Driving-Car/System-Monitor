@@ -2,10 +2,12 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 #include "linux_parser.h"
 
 using std::stof;
+using std::stol;
 using std::string;
 using std::to_string;
 using std::vector;
@@ -230,21 +232,22 @@ string LinuxParser::Command(int pid) {
 // --TODO--: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Ram(int pid) {
-  string ram;
+  string key, val;
   string line;
+  std::stringstream ram;
   std::ifstream stream(kProcDirectory + to_string(pid) + kStatusFilename);
   if (stream.is_open()) {
     while(std::getline(stream, line)) {
       std::istringstream linestream(line);
-      string val;
-      linestream >> val;
-      if(val == "VmSize:") {
-        linestream >> ram;
-        return ram;
+      linestream >> key >> val;
+      if(key == "VmSize:") {
+        // Convert to MB before returning value
+        ram << std::fixed << std::setprecision(2) << stof(val) / 1000;
+        return ram.str();
       }
     }
   }
-  return string();
+  return string("0");
 }
 
 // --TODO--: Read and return the user ID associated with a process
@@ -293,17 +296,15 @@ long LinuxParser::UpTime(int pid) {
   string line;
   std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
   if (stream.is_open()) {
-    std::getline(stream, line);
-    std::istringstream linestream(line);
-    vector<string> vals;
-    while(linestream) {
+    while(std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      vector<string> vals;
       string token;
-      linestream >> token;
-      if (std::all_of(token.begin(), token.end(), isdigit)) {
+      while (std::getline(linestream, token, ' ')) {
         vals.push_back(token);
       }
+      return stol(vals[21])/sysconf(_SC_CLK_TCK);
     }
-    return LinuxParser::UpTime(); // - stol(vals[21])/sysconf(_SC_CLK_TCK);
   }
   return 0;
 }
