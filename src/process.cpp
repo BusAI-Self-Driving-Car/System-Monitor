@@ -19,7 +19,7 @@ int Process::Pid() {
 // TODO: Return this process's CPU utilization
 float Process::CpuUtilization() { return 0; }
 
-// TODO: Return the command that generated this process
+// --TODO--: Return the command that generated this process
 string Process::Command() {
   if(command_ == "") command_ = LinuxParser::Command(pid_);
   return command_;
@@ -27,8 +27,7 @@ string Process::Command() {
 
 // --TODO--: Return this process's memory utilization
 string Process::Ram() {
-  if(ram_ == "") ram_ = LinuxParser::Ram(pid_);
-  return ram_;
+  return LinuxParser::Ram(pid_);
 }
 
 // --TODO--: Return the user (name) that generated this process
