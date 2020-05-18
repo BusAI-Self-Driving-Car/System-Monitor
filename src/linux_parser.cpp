@@ -90,17 +90,16 @@ float LinuxParser::MemoryUtilization() {
 
 // --TODO--: Read and return the system uptime
 long LinuxParser::UpTime() {
-  long uptime;
-  long val1, val2;
+  string val;
   string line;
   std::ifstream stream(kProcDirectory + kUptimeFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
-    linestream >> val1 >> val2;
-    uptime = val1;
+    linestream >> val;
+    return stol(val);
   }
-  return uptime;
+  return 0;
 }
 
 // TODO: Read and return the number of jiffies for the system
@@ -116,8 +115,25 @@ long LinuxParser::ActiveJiffies() { return 0; }
 // TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { return 0; }
 
-// TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+// --TODO--: Read and return CPU utilization
+vector<string> LinuxParser::CpuUtilization() {
+  vector<string> cpu_util;
+  string line;
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    while(linestream) {
+      string token;
+      linestream >> token;
+      if (std::all_of(token.begin(), token.end(), isdigit)) {
+        cpu_util.push_back(token);
+      }
+    }
+    return cpu_util;
+  }
+  return cpu_util;
+}
 
 // --TODO--: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
@@ -234,7 +250,6 @@ string LinuxParser::User(int pid) {
 // --TODO--: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::UpTime(int pid) {
-  long uptime;
   string line;
   std::ifstream stream(kProcDirectory + '/' + to_string(pid) + kStatFilename);
   if (stream.is_open()) {
@@ -244,10 +259,36 @@ long LinuxParser::UpTime(int pid) {
     while(linestream) {
       string token;
       linestream >> token;
-      vals.push_back(token);
+      if (std::all_of(token.begin(), token.end(), isdigit)) {
+        vals.push_back(token);
+      }
     }
-    uptime = stoi(vals[21]);
-    return uptime;
+    return LinuxParser::UpTime(); // - stol(vals[21])/sysconf(_SC_CLK_TCK);
   }
   return 0;
+}
+
+vector<string> LinuxParser::Cpu(int pid) {
+  vector<string> cpu_util;
+  string line;
+  std::ifstream stream(kProcDirectory + '/' + to_string(pid) + kStatFilename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    vector<string> vals;
+    while(linestream) {
+      string token;
+      linestream >> token;
+      if (std::all_of(token.begin(), token.end(), isdigit)) {
+        vals.push_back(token);
+      }
+    }
+    cpu_util.push_back(vals[13]); // utime
+    cpu_util.push_back(vals[14]); // stime
+    cpu_util.push_back(vals[15]); // cutime
+    cpu_util.push_back(vals[16]); // cstime
+    cpu_util.push_back(vals[21]); // starttime
+    return cpu_util;
+  }
+  return cpu_util;
 }

@@ -3,13 +3,17 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
+#include <iostream>
 #include "process.h"
 #include "linux_parser.h"
 
 using std::string;
 using std::to_string;
 using std::vector;
+using std::stol;
+
+using std::cout;
+using std::endl;
 
 // --TODO--: Return this process's ID
 int Process::Pid() {
@@ -17,7 +21,21 @@ int Process::Pid() {
 }
 
 // TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
+float Process::CpuUtilization() {
+  // cout << "CpuUtilization: " << endl;
+  vector<string> cpu_utils = LinuxParser::Cpu(pid_);
+  // cout << "cpu_utils: " << cpu_utils.size() << endl;
+  for(auto str : cpu_utils) {
+    // cout << str << endl;
+  }
+  long total_time = stol(cpu_utils[0])
+                    + stol(cpu_utils[1])
+                    + stol(cpu_utils[2])
+                    + stol(cpu_utils[3]);
+  float seconds = float(UpTime());
+  float cpu_utilization_ = ((total_time / sysconf(_SC_CLK_TCK)) / seconds);
+  return cpu_utilization_;
+}
 
 // --TODO--: Return the command that generated this process
 string Process::Command() {
