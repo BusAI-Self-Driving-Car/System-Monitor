@@ -123,10 +123,9 @@ vector<string> LinuxParser::CpuUtilization() {
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
-    while(linestream) {
-      string token;
-      linestream >> token;
-      if (std::all_of(token.begin(), token.end(), isdigit)) {
+    string token;
+    while (std::getline(linestream, token, ' ')) {
+      if ((token != "cpu") && (token != "")){
         cpu_util.push_back(token);
       }
     }
