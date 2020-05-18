@@ -17,8 +17,19 @@ using std::vector;
 // TODO: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
+void System::RefreshProcesses() {
+    processes_ = {};
+    auto process_ids = LinuxParser::Pids();
+    for (int id : process_ids) {
+        processes_.push_back(Process(id));
+    }
+}
+
 // TODO: Return a container composed of the system's processes
-vector<Process>& System::Processes() { return processes_; }
+vector<Process>& System::Processes()  {
+    RefreshProcesses();
+    return processes_;
+}
 
 // --TODO--: Return the system's kernel identifier (string)
 std::string System::Kernel() { return LinuxParser::Kernel(); }
