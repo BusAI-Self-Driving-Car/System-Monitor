@@ -30,6 +30,7 @@ float Process::CpuUtilization() const { return cpu_; }
 
 void Process::UpdateCpuUtilization() {
   vector<string> cpu_utilization = LinuxParser::CpuUtilization(pid_);
+  if(cpu_utilization.empty()) return;
   float uptime     = float(LinuxParser::UpTime());
   float utime      = std::stof(cpu_utilization[0]);
   float stime      = std::stof(cpu_utilization[1]);
