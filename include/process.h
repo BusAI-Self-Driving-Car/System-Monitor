@@ -13,7 +13,7 @@ public:
   std::string User() const;                      // --TODO--: See src/process.cpp
   std::string Command() const;                   // --TODO--: See src/process.cpp
   float CpuUtilization() const;                  // TODO: See src/process.cpp
-  void CpuUtilization(long active_ticks, long system_ticks);
+  void UpdateCpuUtilization();
   std::string Ram() const;                       // --TODO--: See src/process.cpp
   long int UpTime() const;                       // --TODO--: See src/process.cpp
   bool operator<(const Process& a) const;  // TODO: See src/process.cpp

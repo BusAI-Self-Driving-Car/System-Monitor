@@ -105,7 +105,9 @@ long LinuxParser::UpTime() {
 }
 
 // --TODO--: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return UpTime() * sysconf(_SC_CLK_TCK); }
+long LinuxParser::Jiffies() {
+    return LinuxParser::ActiveJiffies() + LinuxParser::IdleJiffies();
+}
 
 // --TODO--: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
@@ -304,7 +306,7 @@ long LinuxParser::UpTime(int pid) {
   return 0;
 }
 
-vector<string> LinuxParser::Cpu(int pid) {
+vector<string> LinuxParser::CpuUtilization(int pid) {
   vector<string> cpu_util;
   string line;
   std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);

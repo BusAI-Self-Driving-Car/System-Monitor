@@ -10,7 +10,6 @@
 using std::string;
 using std::to_string;
 using std::vector;
-using std::stol;
 
 // Constructor for Process class
 Process::Process(int pid) : pid_(pid){
@@ -29,12 +28,19 @@ int Process::Pid() const { return pid_; }
 // --TODO--: Return this process's CPU utilization
 float Process::CpuUtilization() const { return cpu_; }
 
-void Process::CpuUtilization(long active_ticks, long system_ticks) {
-  long duration_active = active_ticks - cached_active_ticks_;
-  long duration = system_ticks - cached_system_ticks_;
-  cpu_ = static_cast<float>(duration_active) / duration;
-  cached_active_ticks_ = active_ticks;
-  cached_system_ticks_ = system_ticks;
+void Process::UpdateCpuUtilization() {
+  vector<string> cpu_utilization = LinuxParser::CpuUtilization(pid_);
+  float uptime     = float(LinuxParser::UpTime());
+  float utime      = std::stof(cpu_utilization[0]);
+  float stime      = std::stof(cpu_utilization[1]);
+  float cutime     = std::stof(cpu_utilization[2]);
+  float cstime     = std::stof(cpu_utilization[3]);
+  float starttime  = std::stof(cpu_utilization[4]);
+
+  float total_time = (utime + stime + cutime + cstime)/sysconf(_SC_CLK_TCK);
+  float seconds = uptime - (starttime / sysconf(_SC_CLK_TCK));
+
+  cpu_ = total_time / seconds;
 }
 
 // --TODO--: Return the command that generated this process

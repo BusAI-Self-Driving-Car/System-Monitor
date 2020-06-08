@@ -35,8 +35,7 @@ vector<Process>& System::Processes()  {
 
     // Update CPU utilization
     for (auto& process : processes_) {
-      process.CpuUtilization(LinuxParser::ActiveJiffies(process.Pid()),
-                             LinuxParser::Jiffies());
+      process.UpdateCpuUtilization();
     }
 
     sort(processes_.begin(), processes_.end(), std::greater<Process>());
