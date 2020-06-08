@@ -136,8 +136,11 @@ long LinuxParser::ActiveJiffies(int pid) {
 
 // --TODO--: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
-  long active = LinuxParser::Jiffies() - LinuxParser::IdleJiffies();
-  return active;
+  vector<string> time = CpuUtilization();
+  return (stol(time[CPUStates::kUser_]) + stol(time[CPUStates::kNice_]) +
+          stol(time[CPUStates::kSystem_]) + stol(time[CPUStates::kIRQ_]) +
+          stol(time[CPUStates::kSoftIRQ_]) + stol(time[CPUStates::kSteal_]) +
+          stol(time[CPUStates::kGuest_]) + stol(time[CPUStates::kGuestNice_]));
 }
 
 // --TODO--: Read and return the number of idle jiffies for the system
