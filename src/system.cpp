@@ -17,18 +17,29 @@ using std::vector;
 // TODO: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
-void System::RefreshProcesses() {
-    processes_ = {};
-    auto process_ids = LinuxParser::Pids();
-    for (int id : process_ids) {
-        processes_.push_back(Process(id));
-    }
-}
-
 // --TODO--: Return a container composed of the system's processes
 vector<Process>& System::Processes()  {
-    RefreshProcesses();
-    sort(processes_.begin(), processes_.end());
+    vector<int> pids{LinuxParser::Pids()};
+
+    // Create a set and insert all existing process ids
+    set<int> existent_pids;
+    for (Process const& process : processes_) {
+      existent_pids.insert(process.Pid());
+    }
+
+    // Emplace all new processes
+    for (int pid : pids) {
+      if (existent_pids.find(pid) == existent_pids.end())
+        processes_.emplace_back(Process(pid));
+    }
+
+    // Update CPU utilization
+    for (auto& process : processes_) {
+      process.CpuUtilization(LinuxParser::ActiveJiffies(process.Pid()),
+                             LinuxParser::Jiffies());
+    }
+
+    sort(processes_.begin(), processes_.end(), std::greater<Process>());
     return processes_;
 }
 
