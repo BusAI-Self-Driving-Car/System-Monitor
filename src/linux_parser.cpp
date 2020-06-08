@@ -242,7 +242,7 @@ string LinuxParser::Ram(int pid) {
       linestream >> key >> val;
       if(key == "VmSize:") {
         // Convert to MB before returning value
-        ram << std::fixed << std::setprecision(2) << stof(val) / 1000;
+        ram << std::fixed << std::setprecision(2) << stof(val) / 1024;
         return ram.str();
       }
     }
@@ -303,7 +303,7 @@ long LinuxParser::UpTime(int pid) {
       while (std::getline(linestream, token, ' ')) {
         vals.push_back(token);
       }
-      return stol(vals[21])/sysconf(_SC_CLK_TCK);
+      return stol(vals[13])/sysconf(_SC_CLK_TCK);
     }
   }
   return 0;
