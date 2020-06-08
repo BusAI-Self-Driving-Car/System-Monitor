@@ -105,15 +105,7 @@ long LinuxParser::UpTime() {
 }
 
 // --TODO--: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() {
-  long total = 0;
-  vector<string> cpu_utilization;
-  cpu_utilization = LinuxParser::CpuUtilization();
-  for (int state = kUser_; state  <= kSteal_; state++) {
-    total += stol(cpu_utilization[state]);
-  }
-  return total;
-}
+long LinuxParser::Jiffies() { return UpTime() * sysconf(_SC_CLK_TCK); }
 
 // --TODO--: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
@@ -242,7 +234,7 @@ string LinuxParser::Ram(int pid) {
       linestream >> key >> val;
       if(key == "VmSize:") {
         // Convert to MB before returning value
-        ram << std::fixed << std::setprecision(2) << stof(val) / 1024;
+        ram << std::setprecision(2) << std::fixed << (stof(val) / 1024);
         return ram.str();
       }
     }
