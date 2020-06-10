@@ -13,8 +13,8 @@ public:
 
 // --TODO--: Declare any necessary private members
 private:
-  long cached_active_ticks_{0};
-  long cached_idle_ticks_{0};
+  float prev_active_jiffies_;
+  float prev_idle_jiffies_;
 };
 
 #endif

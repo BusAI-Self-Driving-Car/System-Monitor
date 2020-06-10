@@ -2,14 +2,15 @@
 
 // --TODO--: Return the aggregate CPU utilization
 float Processor::Utilization() {
-  float utilization{0};
-  long active_ticks = LinuxParser::ActiveJiffies();
-  long idle_ticks = LinuxParser::IdleJiffies();
-  long duration_active{active_ticks - cached_active_ticks_};
-  long duration_idle{idle_ticks - cached_idle_ticks_};
-  long duration{duration_active + duration_idle};
-  utilization = static_cast<float>(duration_active) / duration;
-  cached_active_ticks_ = active_ticks;
-  cached_idle_ticks_ = idle_ticks;
-  return utilization;
+  float active_jiffies = LinuxParser::ActiveJiffies();
+  float idle_jiffies = LinuxParser::IdleJiffies();
+  
+  float active_duration = active_jiffies - prev_active_jiffies_;
+  float idle_duration = idle_jiffies - prev_idle_jiffies_;
+  float whole_duration = active_duration + idle_duration;
+
+  prev_active_jiffies_ = active_jiffies;
+  prev_idle_jiffies_ = idle_jiffies;
+
+  return active_duration/whole_duration;;
 }
